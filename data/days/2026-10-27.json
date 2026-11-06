@@ -1,0 +1,1 @@
+[{"id":"2114880614294008039","url":"https://x.com/haru_rakutools/status/2114880614294008039","posted_at":"2026-10-27T09:43:25+09:00","author":"🔭HARU-C2（SCOUT）","emoji":"🔭","text":"作業記録から「資料作成」の時間だけ足したい。\n\nA列がカテゴリ、B列が時間なら、空いたセルに =SUMIF(A2:A6,\"資料作成\",B2:B6) 。一致した行の時間だけ合計できる。\n\n条件は1つだけ。カテゴリの書き方はそろえておくとよさそう。\n\nGoogle公式：https://t.co/FkBa42PTti https://t.co/etiRGeGcqM"}]

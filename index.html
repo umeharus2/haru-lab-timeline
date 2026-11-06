@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>はるのブクマ研究室 タイムライン</title>
+<style>
+:root{
+  --bg:#f6f5f2; --card:#ffffff; --ink:#1d1d1f; --sub:#6b6b70; --line:#e6e4df;
+  --accent:#2f6f5e; --quote:#f2f1ec; --chip:#ecebe6; --chip-on:#1d1d1f; --chip-on-ink:#fff;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#121214; --card:#1b1b1e; --ink:#ececee; --sub:#9a9aa2; --line:#2b2b30;
+    --accent:#7cc7ae; --quote:#232327; --chip:#26262b; --chip-on:#ececee; --chip-on-ink:#121214; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  font-size:15px;line-height:1.7;-webkit-text-size-adjust:100%}
+a{color:var(--accent);text-decoration:none;word-break:break-all}
+a:hover{text-decoration:underline}
+.wrap{max-width:640px;margin:0 auto;padding:0 12px 80px}
+header{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);margin:0 -12px;padding:10px 12px 8px}
+h1{font-size:17px;margin:0;font-weight:700;letter-spacing:.02em}
+.meta{font-size:12px;color:var(--sub)}
+.tools{display:flex;gap:8px;margin-top:8px}
+.tools select{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:7px 6px;font-size:13px;max-width:42%}
+.tools input{flex:1;min-width:0;border:1px solid var(--line);background:var(--card);color:var(--ink);
+  border-radius:10px;padding:7px 10px;font-size:14px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;background:var(--chip);color:var(--ink);border-radius:999px;padding:4px 11px;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--chip-on);color:var(--chip-on-ink)}
+.day{font-size:12px;color:var(--sub);font-weight:600;margin:22px 4px 8px;letter-spacing:.05em}
+.post{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 10px;margin-bottom:10px}
+.head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--quote);display:grid;place-items:center;font-size:18px;flex:none}
+.who{font-weight:700;font-size:14px;line-height:1.3}
+.when{font-size:12px;color:var(--sub)}
+.body{white-space:pre-wrap;word-break:break-word}
+.body.clamp{display:-webkit-box;-webkit-line-clamp:12;-webkit-box-orient:vertical;overflow:hidden}
+.more{background:none;border:0;color:var(--accent);padding:2px 0;font-size:13px;cursor:pointer}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12.5px}
+details.q{margin-top:10px;border:1px solid var(--line);border-radius:12px;background:var(--quote)}
+details.q>summary{list-style:none;cursor:pointer;padding:9px 12px;font-size:13px;color:var(--sub);display:flex;gap:6px;align-items:center}
+details.q>summary::-webkit-details-marker{display:none}
+details.q>summary::before{content:"▸";transition:transform .15s;display:inline-block}
+details.q[open]>summary::before{transform:rotate(90deg)}
+.qs{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.qb{padding:0 12px 12px;font-size:14px}
+.qa{font-weight:700;font-size:13.5px}
+.qa span{font-weight:400;color:var(--sub)}
+.nest{border-left:3px solid var(--line);padding-left:10px;margin-top:10px}
+.media{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.m{display:block;border:1px dashed var(--line);border-radius:10px;padding:7px 10px;font-size:12.5px;color:var(--sub);background:var(--card)}
+.m b{color:var(--ink);font-weight:600}
+.cm{margin-top:10px;font-size:12.5px;color:var(--sub);background:var(--card);border-radius:10px;padding:8px 10px}
+.lbl{font-size:11.5px;font-weight:700;color:var(--sub);letter-spacing:.04em;margin-top:10px}
+details.sub{margin-top:8px}
+details.sub>summary{cursor:pointer;font-size:12.5px;color:var(--accent)}
+.status{text-align:center;color:var(--sub);font-size:13px;padding:24px 0}
+.empty{text-align:center;color:var(--sub);padding:40px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🧪 はるのブクマ研究室</h1>
+    <div class="meta" id="meta">読み込み中…</div>
+    <div class="tools"><input id="q" type="search" placeholder="本文・引用元を検索（読み込み済みの日）" autocomplete="off"><select id="jump" aria-label="日付へ移動"></select></div>
+    <div class="chips" id="chips"></div>
+  </header>
+  <main id="list"></main>
+  <div class="status" id="status"></div>
+  <div id="sentinel" style="height:1px"></div>
+</div>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const list = $("#list"), statusEl = $("#status");
+  const BATCH = 20;                      // 一度に描くカード数（DOMを軽く保つ）
+  let index = null, dayPtr = 0, startDay = 0, loading = false;
+  let all = [];                          // 読み込み済みの投稿（新しい順）
+  let view = [], drawn = 0, lastDay = null;
+  let filterAuthor = null, query = "";
+
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const linkify = s => esc(s).replace(/https?:\/\/[^\s<>"'）」】]+/g, u => `<a href="${u}" target="_blank" rel="noopener">${u.length > 48 ? u.slice(0, 46) + "…" : u}</a>`);
+  const jst = iso => { const d = new Date(iso); return isNaN(d) ? null : new Date(d.getTime() + 9 * 3600e3); };
+  const pad = n => String(n).padStart(2, "0");
+  const dayOf = iso => { const d = jst(iso); return d ? `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}` : "日付不明"; };
+  const timeOf = iso => { const d = jst(iso); return d ? `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}` : ""; };
+  const dateLabel = iso => { const d = jst(iso); return d ? `${d.getUTCFullYear()}/${d.getUTCMonth()+1}/${d.getUTCDate()}` : ""; };
+
+  async function getJSON(path){
+    const r = await fetch(path, {cache: "no-cache"});
+    if (!r.ok) throw new Error(path + " " + r.status);
+    return r.json();
+  }
+
+  function media(ms){
+    if (!ms || !ms.length) return "";
+    return `<div class="media">` + ms.map(m =>
+      `<a class="m" href="${esc(m.url)}" target="_blank" rel="noopener"><b>${m.type === "video" ? "🎞 動画" : m.type === "animated_gif" ? "🎞 GIF" : "🖼 画像"}</b>${m.description ? "　" + esc(m.description) : "　（説明なし・タップで開く）"}</a>`
+    ).join("") + `</div>`;
+  }
+
+  function tweet(t, nested){
+    if (!t) return "";
+    let h = "";
+    if (t.author_name || t.author_handle)
+      h += `<div class="qa">${esc(t.author_name || "")} <span>@${esc(t.author_handle || "")}${t.created_at ? "・" + dateLabel(t.created_at) : ""}</span></div>`;
+    if (t.text) h += `<div class="body" style="margin-top:4px">${linkify(t.text)}</div>`;
+    if (t.article) h += `<div class="lbl">📰 記事</div><div class="cm"><b>${esc(t.article.title || "")}</b><br>${linkify(t.article.excerpt || "")}</div>`;
+    h += media(t.media);
+    if (t.quoted) h += `<div class="nest">${tweet(t.quoted, true)}</div>`;
+    if (t.thread && t.thread.length)
+      h += `<details class="sub"><summary>🧵 スレッドの続き ${t.thread.length}件</summary>` +
+        t.thread.map(x => `<div class="nest"><div class="body">${linkify(x.text)}</div>${media(x.media)}</div>`).join("") + `</details>`;
+    if (t.comment && !nested) h += `<div class="lbl">📚 ブクマ係メモ</div><div class="cm">${linkify(t.comment)}</div>`;
+    if (t.url) h += `<div style="margin-top:8px;font-size:12.5px"><a href="${esc(t.url)}" target="_blank" rel="noopener">元ポストをXで見る ↗</a></div>`;
+    return h;
+  }
+
+  function card(p){
+    const q = p.quoted;
+    const qsum = q ? (q.author_handle ? `@${q.author_handle}　` : "") + (q.text || "").replace(/\s+/g, " ").slice(0, 60) : "";
+    const el = document.createElement("article");
+    el.className = "post";
+    el.innerHTML = `
+      <div class="head"><div class="av">${esc(p.emoji)}</div>
+        <div><div class="who">${esc(p.author.replace(p.emoji, ""))}</div><div class="when">${timeOf(p.posted_at)}</div></div></div>
+      <div class="body clamp">${linkify(p.text)}</div>
+      <button class="more" hidden>続きを読む</button>
+      ${q ? `<details class="q"><summary><span>引用元</span><span class="qs">${esc(qsum || "元ポスト")}</span></summary><div class="qb">${tweet(q)}</div></details>` : ""}
+      <div class="foot"><a href="${esc(p.url)}" target="_blank" rel="noopener">Xで見る ↗</a></div>`;
+    const body = el.querySelector(".body"), more = el.querySelector(".more");
+    requestAnimationFrame(() => {
+      if (body.scrollHeight > body.clientHeight + 4) {
+        more.hidden = false;
+        more.onclick = () => { body.classList.remove("clamp"); more.hidden = true; };
+      } else body.classList.remove("clamp");
+    });
+    return el;
+  }
+
+  const matches = p => {
+    if (filterAuthor && p.author !== filterAuthor) return false;
+    if (!query) return true;
+    const hay = (p.text + " " + JSON.stringify(p.quoted || "")).toLowerCase();
+    return query.split(/\s+/).every(w => hay.includes(w));
+  };
+
+  function reset(){
+    list.innerHTML = ""; drawn = 0; lastDay = null;
+    view = all.filter(matches);
+    draw();
+  }
+
+  function draw(){
+    const end = Math.min(drawn + BATCH, view.length);
+    const frag = document.createDocumentFragment();
+    for (; drawn < end; drawn++){
+      const p = view[drawn], d = dayOf(p.posted_at);
+      if (d !== lastDay){ const h = document.createElement("div"); h.className = "day"; h.textContent = d; frag.appendChild(h); lastDay = d; }
+      frag.appendChild(card(p));
+    }
+    list.appendChild(frag);
+    updateStatus();
+  }
+
+  function updateStatus(){
+    const moreMonths = index && dayPtr < index.days.length;
+    if (!view.length && !moreMonths) statusEl.textContent = all.length ? "該当する投稿はありません" : "";
+    else if (drawn >= view.length && !moreMonths) statusEl.textContent = (startDay === 0 ? `ここまで（${all.length}件すべて読み込み済み）` : "ここまで（いちばん古い日）");
+    else statusEl.textContent = loading ? "読み込み中…" : "";
+  }
+
+  async function loadNextMonth(){
+    if (loading || !index || dayPtr >= index.days.length) return false;
+    loading = true; updateStatus();
+    const m = index.days[dayPtr++];
+    try {
+      const items = await getJSON("data/" + m.file);
+      all = all.concat(items);
+      const add = items.filter(matches);
+      view = view.concat(add);
+    } catch (e) { statusEl.textContent = "読み込みに失敗しました（" + m.day + "）"; }
+    loading = false;
+    return true;
+  }
+
+  async function more(){
+    if (drawn < view.length) { draw(); return; }
+    if (await loadNextMonth()) { draw(); if (drawn < BATCH) more(); }
+    else updateStatus();
+  }
+
+  function chips(){
+    const box = $("#chips");
+    const names = ["すべて", ...index.authors];
+    box.innerHTML = names.map((n, i) => `<button class="chip${i === 0 ? " on" : ""}" data-a="${i ? esc(n) : ""}">${esc(n)}</button>`).join("");
+    box.onclick = e => {
+      const b = e.target.closest(".chip"); if (!b) return;
+      box.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c === b));
+      filterAuthor = b.dataset.a || null; reset(); more();
+    };
+  }
+
+  function jumpMenu(){
+    const sel = $("#jump");
+    sel.innerHTML = `<option value="0">最新から</option>` + index.days.map((d, i) =>
+      `<option value="${i}">${d.day.slice(5).replace("-", "/")}（${d.count}）</option>`).join("");
+    sel.onchange = () => {
+      dayPtr = startDay = +sel.value; all = []; view = []; reset(); window.scrollTo(0, 0); more();
+    };
+  }
+
+  let t;
+  $("#q").addEventListener("input", e => { clearTimeout(t); t = setTimeout(() => { query = e.target.value.trim().toLowerCase(); reset(); more(); }, 200); });
+
+  new IntersectionObserver(es => { if (es[0].isIntersecting) more(); }, {rootMargin: "800px"}).observe($("#sentinel"));
+
+  (async () => {
+    try {
+      index = await getJSON("data/index.json");
+      const u = new Date(index.updated_at);
+      $("#meta").textContent = `${index.total}件の投稿・最終同期 ${isNaN(u) ? index.updated_at : u.toLocaleString("ja-JP", {timeZone: "Asia/Tokyo", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit"})}`;
+      chips(); jumpMenu();
+      more();
+    } catch (e) {
+      $("#meta").textContent = "データを読み込めませんでした";
+      list.innerHTML = `<div class="empty">data/index.json が見つかりません</div>`;
+    }
+  })();
+})();
+</script>
+</body>
+</html>

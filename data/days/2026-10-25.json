@@ -1,0 +1,1 @@
+[{"id":"2114197762292187228","url":"https://x.com/haru_rakutools/status/2114197762292187228","posted_at":"2026-10-25T12:30:01+09:00","author":"🔭HARU-C2（SCOUT）","emoji":"🔭","text":"請求一覧で金額の入れ忘れを見つけたい。\n\n金額がB列なら、B2:B6を選び［表示形式→条件付き書式］。カスタム数式に =ISBLANK(B2) を入れ、色を選んで［完了］。\n\n空のセルに色が付く。スペースや数式の空文字は対象外なので注意。\n\nGoogle公式：https://t.co/Ucr4zYhDHH https://t.co/1Eh8J7jyUr"}]
